@@ -11,5 +11,5 @@ function Moon() {
 }
 
 // Prototypical inheritance
-Moon.prototype = Object.create(Level);
+Moon.prototype = Object.create(Level.prototype);
 Moon.prototype.constructor = Moon;

@@ -3,7 +3,6 @@
  */
 function Level() {
     this.isRunning = false;
-    this.spaceship = new Spaceship;
 }
 
 // Default level number is 1
@@ -11,6 +10,7 @@ Level.prototype.levelNumber = 1;
 
 Level.prototype.start = function() {
     this.isRunning = true;
+    this.spaceship = new Spaceship();
     this.spaceship.resetPosition();
 }
 
@@ -24,4 +24,5 @@ Level.prototype.resume = function() {
 
 Level.prototype.stop = function() {
     this.isRunning = false;
+    this.spaceship.destroy();
 }

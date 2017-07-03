@@ -10,7 +10,7 @@
     var options = { capture: false, once: true };
 
     // You can use startApplication here, because it's a named function (hoisting)
-    document.addEventListener('ready', startApplication, options);
+    window.addEventListener('load', startApplication, options);
 
     /**
      * Start the application

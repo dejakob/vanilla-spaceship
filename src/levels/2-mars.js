@@ -11,5 +11,5 @@ function Mars() {
 }
 
 // Prototypical inheritance
-Mars.prototype = Object.create(Level);
+Mars.prototype = Object.create(Level.prototype);
 Mars.prototype.constructor = Mars;
