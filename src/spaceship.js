@@ -6,12 +6,19 @@ function Spaceship() {
     this.width = 50;
     this.x = 0;
     this.y = 0;
+    this.bullets = [];
 
+    /**
+     * Initialize the spaceShip DOM element
+     */
     this.initOnDom = function() {
         this.spaceshipDom = document.createElement('div');
         document.body.appendChild(this.spaceshipDom);
     }
 
+    /**
+     * Attach updated styling to the DOM element
+     */
     this.draw = function() {
         this.spaceshipDom.style.position = 'absolute';
         this.spaceshipDom.style.backgroundColor = 'red';
@@ -25,8 +32,12 @@ function Spaceship() {
     this.draw();
 }
 
+// Spaceship constants
 Spaceship.STEP = 10;
 
+/**
+ * Move the spaceShip one step to left
+ */
 Spaceship.prototype.moveLeft = function() {
     if (this.x >= Spaceship.STEP) {
         this.x -= Spaceship.STEP;
@@ -35,6 +46,9 @@ Spaceship.prototype.moveLeft = function() {
     this.draw();
 }
 
+/**
+ * Move the spaceShip one step to right
+ */
 Spaceship.prototype.moveRight = function() {
     if (this.x <= WindowHelper.getWidth() - Spaceship.STEP) {
         this.x += Spaceship.STEP;
@@ -43,6 +57,9 @@ Spaceship.prototype.moveRight = function() {
     this.draw();
 }
 
+/**
+ * Move the spaceShip one step up
+ */
 Spaceship.prototype.moveUp = function() {
     if (this.y <= Math.round(WindowHelper.getHeight() / 2)) {
         this.y += Spaceship.STEP;
@@ -51,6 +68,9 @@ Spaceship.prototype.moveUp = function() {
     this.draw();
 }
 
+/**
+ * Move the spaceShip one step down
+ */
 Spaceship.prototype.moveDown = function() {
     if (this.y >= Spaceship.STEP) {
         this.y -= Spaceship.STEP;
@@ -59,6 +79,9 @@ Spaceship.prototype.moveDown = function() {
     this.draw();
 }
 
+/**
+ * Put the spaceShip at the bottom centered on the screen
+ */
 Spaceship.prototype.resetPosition = function() {
     var windowHeight = WindowHelper.getHeight();
     var windowWidth = WindowHelper.getWidth();
@@ -68,6 +91,16 @@ Spaceship.prototype.resetPosition = function() {
     this.draw();
 }
 
+/**
+ * Shoot a bullet
+ */
+Spaceship.prototype.shoot = function() {
+
+}
+
+/**
+ * Destroy the spaceShip
+ */
 Spaceship.prototype.destroy = function() {
     this.spaceshipDom.parentElement.removeChild(this.spaceshipDom);
 }
