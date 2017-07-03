@@ -1,0 +1,23 @@
+{
+  "name": "vanilla-spaceship",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dejakob/vanilla-spaceship.git"
+  },
+  "author": "dejakob",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dejakob/vanilla-spaceship/issues"
+  },
+  "homepage": "https://github.com/dejakob/vanilla-spaceship#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1"
+  }
+}
