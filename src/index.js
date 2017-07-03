@@ -16,6 +16,6 @@
      * Start the application
      */
     function startApplication() {
-        
+        Game.start();
     }
 })();

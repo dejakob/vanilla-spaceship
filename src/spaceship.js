@@ -1,0 +1,6 @@
+/**
+ * Spaceship object
+ */
+function Spaceship() {
+
+}
