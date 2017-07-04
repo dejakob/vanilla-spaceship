@@ -1,3 +1,9 @@
+/**
+ * Bullet Object
+ * @param {Object} startPosition 
+ * @param {Number} startPosition.x
+ * @param {Number} startPosition.y
+ */
 function Bullet(startPosition) {
     if (
         !startPosition ||
@@ -25,3 +31,25 @@ function Bullet(startPosition) {
     this.draw();
 }
 
+Bullet.STEP = 10;
+Bullet.INTERVAL = 50;
+
+/**
+ * Fire the bullet
+ */
+Bullet.prototype.fire = function() {
+    this.interval = setInterval(tick.bind(this), Bullet.INTERVAL);
+
+    function tick() {
+        this.y -= Bullet.STEP;
+        this.draw();
+    }
+}
+
+/**
+ * Destroy the bullet
+ */
+Bullet.prototype.destroy = function() {
+    clearInterval(this.interval);
+    this.bulletDomElement.parentElement.removeChild(this.bulletDomElement);
+}
