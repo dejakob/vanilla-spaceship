@@ -75,6 +75,15 @@ Level.prototype.start = function() {
     this.spaceship.resetPosition();
     this.addKeyListeners();
     Timer.start();
+
+    if (
+        this.obstacles &&
+        typeof this.obstacles.length === 'number'
+    ) {
+        for (var i = 0; i < this.obstacles.length; i++) {
+            this.obstacles[i].invade();
+        }
+    }
 }
 
 Level.prototype.pause = function() {

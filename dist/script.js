@@ -196,6 +196,15 @@ Level.prototype.start = function() {
     this.spaceship.resetPosition();
     this.addKeyListeners();
     Timer.start();
+
+    if (
+        this.obstacles &&
+        typeof this.obstacles.length === 'number'
+    ) {
+        for (var i = 0; i < this.obstacles.length; i++) {
+            this.obstacles[i].invade();
+        }
+    }
 }
 
 Level.prototype.pause = function() {
@@ -217,9 +226,71 @@ Level.prototype.stop = function() {
 /**
  * Obstacle you need to get rid of
  */
-function Obstacle() {
+function Obstacle(options) {
+    var obstacleOptions = options || {};
 
+    this.height = Obstacle.DEFAULT_HEIGHT;
+    this.width = Obstacle.DEFAULT_WIDTH;
+    this.step = Obstacle.DEFAULT_STEP;
+    this.x = obstacleOptions.x || 0;
+    this.y = WindowHelper.getHeight() + (obstacleOptions.y || 0);
+
+    this.initDomObstacle = function() {
+        this.obstacleDomElement = document.createElement('div');
+        document.body.appendChild(this.obstacleDomElement);
+    };
+    this.draw = function() {
+        this.obstacleDomElement.style.position = 'absolute';
+        this.obstacleDomElement.style.height = this.height + 'px';
+        this.obstacleDomElement.style.width = this.width + 'px';
+        this.obstacleDomElement.style.bottom = this.y + 'px';
+        this.obstacleDomElement.style.left = this.x + 'px';
+        this.obstacleDomElement.style.backgroundColor = 'darkblue';
+    };
+
+    this.initDomObstacle();
+    this.draw();
 }
+
+Obstacle.DEFAULT_HEIGHT = 100;
+Obstacle.DEFAULT_WIDTH = 100;
+Obstacle.DEFAULT_STEP = 3;
+
+/**
+ * Start invading space by going down
+ */
+Obstacle.prototype.invade = function() {
+    this.interval = Timer.addTick(tick.bind(this));
+
+    function tick() {
+        this.moveDown.call(this);
+    }
+}
+
+/**
+ * Move the obstacle down
+ */
+Obstacle.prototype.moveDown = function() {
+    this.y -= this.step;
+
+    this.draw();
+
+    if (this.y < -this.height) {
+        this.destroy();
+    }
+}
+
+/**
+ * Destroy the obstacle
+ */
+Obstacle.prototype.destroy = function() {
+    try {
+        this.obstacleDomElement.parentNode.removeChild(this.obstacleDomElement);
+    }
+    finally {
+        Timer.removeTick(this.interval);
+    }
+} 
 /**
  * Spaceship object
  */
@@ -347,29 +418,49 @@ var Timer = (function() {
         removeTick: removeTickEvent.bind(this)
     };
 
+    /**
+     * Start the Global timer
+     */
     function start() {
         this.interval = setInterval(tick.bind(this), 50);
     }
 
+    /**
+     * Add a listener that should get triggered on every timer tick
+     * @param {Function} tickEvent 
+     */
     function addTickEvent(tickEvent) {
         this.tickEvents.push(tickEvent);
         return tickEvent;
     }
 
+    /**
+     * Remove an earlier added listener
+     * @param {Function} tickEvent 
+     */
     function removeTickEvent(tickEvent) {
         this.tickEvents.splice(this.tickEvents.indexOf(tickEvent), 1);
     }
 
+    /**
+     * Gets triggered each interval tick
+     */
     function tick() {
         for (var i = 0; i < this.tickEvents.length; i++) {
             this.tickEvents[i]();
         }
     }
 
+    /**
+     * Pause the timer
+     */
     function pause() {
         clearInterval(this.interval);
     }
 
+    /**
+     * Stop the timer
+     */
     function stop() {
         clearInterval(this.interval);
         this.tickEvents = [];
@@ -400,7 +491,32 @@ function Moon() {
     // Call the constructor of Level
     Level.call(this);
 
-    
+    var obstacleWidth = Obstacle.DEFAULT_WIDTH;
+    var windowWidth = WindowHelper.getWidth();
+
+    this.obstacles = [];
+
+    addRow.call(this, 4, 0);
+    addRow.call(this, 3, 150);
+    addRow.call(this, 2, 300);
+    addRow.call(this, 1, 500);
+
+    /**
+     * Add a horizontal row of Obstacles to the obstacles list
+     * @param {Number} columns 
+     * @param {Number} yOffset
+     */
+    function addRow(columns, yOffset) {
+        var amountOfSpacings = columns - 1;
+        var totalWidthOfObstaclesInRow = obstacleWidth * columns;
+        var spacingBetween = amountOfSpacings === 0 ?
+            0 :
+            Math.round((windowWidth - totalWidthOfObstaclesInRow) / amountOfSpacings);
+
+        for (var col = 0; col < columns; col++) {
+            this.obstacles.push(new Obstacle({ x: col * (spacingBetween + obstacleWidth), y: yOffset }));
+        }
+    }
 }
 
 // Prototypical inheritance
