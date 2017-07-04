@@ -95,9 +95,11 @@ Spaceship.prototype.resetPosition = function() {
  * Shoot a bullet
  */
 Spaceship.prototype.shoot = function() {
-    var x = this.x - Math.round(this.width / 2);
+    var x = this.x + Math.round(this.width / 2);
     var y = this.y + this.height;
     var bullet = new Bullet({ x: x, y: y });
+
+    bullet.fire();
 
     this.bullets.push(bullet);
 }

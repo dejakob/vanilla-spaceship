@@ -7,8 +7,8 @@
 function Bullet(startPosition) {
     if (
         !startPosition ||
-        startPosition.x !== 'number' ||
-        startPosition.y !== 'number'
+        typeof startPosition.x !== 'number' ||
+        typeof startPosition.y !== 'number'
     ) {
         throw new Error('Invalid start position, both x and y properties should be numbers');
     }
@@ -24,7 +24,10 @@ function Bullet(startPosition) {
     this.draw = function() {
         this.bulletDomElement.style.left = this.x + 'px';
         this.bulletDomElement.style.bottom = this.y + 'px';
+        this.bulletDomElement.style.height = '10px';
+        this.bulletDomElement.style.width = '1px';
         this.bulletDomElement.style.backgroundColor = 'green';
+        this.bulletDomElement.style.position = 'absolute';
     }
 
     this.initializeDom();
@@ -41,7 +44,7 @@ Bullet.prototype.fire = function() {
     this.interval = setInterval(tick.bind(this), Bullet.INTERVAL);
 
     function tick() {
-        this.y -= Bullet.STEP;
+        this.y += Bullet.STEP;
         this.draw();
     }
 }
@@ -300,9 +303,11 @@ Spaceship.prototype.resetPosition = function() {
  * Shoot a bullet
  */
 Spaceship.prototype.shoot = function() {
-    var x = this.x - Math.round(this.width / 2);
+    var x = this.x + Math.round(this.width / 2);
     var y = this.y + this.height;
     var bullet = new Bullet({ x: x, y: y });
+
+    bullet.fire();
 
     this.bullets.push(bullet);
 }
