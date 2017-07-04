@@ -35,13 +35,12 @@ function Bullet(startPosition) {
 }
 
 Bullet.STEP = 10;
-Bullet.INTERVAL = 50;
-
+ 
 /**
  * Fire the bullet
  */
 Bullet.prototype.fire = function() {
-    this.interval = setInterval(tick.bind(this), Bullet.INTERVAL);
+    this.interval = Timer.addTick(tick.bind(this));
 
     function tick() {
         this.y += Bullet.STEP;
@@ -57,8 +56,12 @@ Bullet.prototype.fire = function() {
  * Destroy the bullet
  */
 Bullet.prototype.destroy = function() {
-    clearInterval(this.interval);
-    this.bulletDomElement.parentElement.removeChild(this.bulletDomElement);
+    try {
+        this.bulletDomElement.parentNode.removeChild(this.bulletDomElement);
+    }
+    finally {
+        Timer.removeTick(this.interval);
+    }
 }
 
 /**
@@ -143,6 +146,8 @@ function Level() {
                     return moveSpaceshipLeft.call(this);
                 case Level.KEY_CODES.SPACE:
                     return fireBullet.call(this);
+                case Level.KEY_CODES.P:
+                    return this.pause();    
             }
         }
         
@@ -178,7 +183,8 @@ Level.KEY_CODES = {
     RIGHT: 39,
     DOWN: 40,
     LEFT: 37,
-    SPACE: 32
+    SPACE: 32,
+    P: 80
 };
 
 // Default level number is 1
@@ -189,17 +195,21 @@ Level.prototype.start = function() {
     this.spaceship = new Spaceship();
     this.spaceship.resetPosition();
     this.addKeyListeners();
+    Timer.start();
 }
 
 Level.prototype.pause = function() {
     this.isRunning = false;
+    Timer.stop();
 }
 
 Level.prototype.resume = function() {
     this.isRunning = true;
+    Timer.start();
 }
 
 Level.prototype.stop = function() {
+    Timer.stop();
     this.isRunning = false;
     this.spaceship.destroy();
     this.removeKeyListeners();
@@ -322,6 +332,45 @@ Spaceship.prototype.shoot = function() {
 Spaceship.prototype.destroy = function() {
     this.spaceshipDom.parentElement.removeChild(this.spaceshipDom);
 }
+/**
+ * Single instance Timer
+ */
+var Timer = (function() {
+    this.interval = null;
+    this.tickEvents = [];
+
+    return {
+        start: start.bind(this),
+        pause: pause.bind(this),
+        addTick: addTickEvent.bind(this),
+        removeTick: removeTickEvent.bind(this)
+    };
+
+    function start() {
+        this.interval = setInterval(tick.bind(this), 50);
+    }
+
+    function addTickEvent(tickEvent) {
+        this.tickEvents.push(tickEvent);
+        return tickEvent;
+    }
+
+    function removeTickEvent(tickEvent) {
+        this.tickEvents.splice(this.tickEvents.indexOf(tickEvent), 1);
+    }
+
+    function tick() {
+        for (var i = 0; i < this.tickEvents.length; i++) {
+            this.tickEvents[i]();
+        }
+    }
+
+    function pause() {
+        clearInterval(this.interval);
+    }
+})();
+
+Timer.INTERVAL = 50;
 var WindowHelper = {
     getHeight: function() {
         return window.innerHeight

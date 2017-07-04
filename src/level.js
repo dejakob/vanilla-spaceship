@@ -25,6 +25,8 @@ function Level() {
                     return moveSpaceshipLeft.call(this);
                 case Level.KEY_CODES.SPACE:
                     return fireBullet.call(this);
+                case Level.KEY_CODES.P:
+                    return this.pause();    
             }
         }
         
@@ -60,7 +62,8 @@ Level.KEY_CODES = {
     RIGHT: 39,
     DOWN: 40,
     LEFT: 37,
-    SPACE: 32
+    SPACE: 32,
+    P: 80
 };
 
 // Default level number is 1
@@ -71,17 +74,21 @@ Level.prototype.start = function() {
     this.spaceship = new Spaceship();
     this.spaceship.resetPosition();
     this.addKeyListeners();
+    Timer.start();
 }
 
 Level.prototype.pause = function() {
     this.isRunning = false;
+    Timer.stop();
 }
 
 Level.prototype.resume = function() {
     this.isRunning = true;
+    Timer.start();
 }
 
 Level.prototype.stop = function() {
+    Timer.stop();
     this.isRunning = false;
     this.spaceship.destroy();
     this.removeKeyListeners();

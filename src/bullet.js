@@ -35,13 +35,12 @@ function Bullet(startPosition) {
 }
 
 Bullet.STEP = 10;
-Bullet.INTERVAL = 50;
-
+ 
 /**
  * Fire the bullet
  */
 Bullet.prototype.fire = function() {
-    this.interval = setInterval(tick.bind(this), Bullet.INTERVAL);
+    this.interval = Timer.addTick(tick.bind(this));
 
     function tick() {
         this.y += Bullet.STEP;
@@ -57,6 +56,10 @@ Bullet.prototype.fire = function() {
  * Destroy the bullet
  */
 Bullet.prototype.destroy = function() {
-    clearInterval(this.interval);
-    this.bulletDomElement.parentElement.removeChild(this.bulletDomElement);
+    try {
+        this.bulletDomElement.parentNode.removeChild(this.bulletDomElement);
+    }
+    finally {
+        Timer.removeTick(this.interval);
+    }
 }
