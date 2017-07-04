@@ -3,6 +3,8 @@
  */
 var Game = (function() {
     var currentLevel = null;
+    var currentLevelIndex = 0;
+    var score = 0;
 
     return {
         start: start,
@@ -10,7 +12,9 @@ var Game = (function() {
         resume: resume,
         stop: stop,
 
-        getCurrentLevel: getCurrentLevel
+        getCurrentLevel: getCurrentLevel,
+        addScore: addScore,
+        goToNextLevel: goToNextLevel
     };
 
     /**
@@ -18,7 +22,7 @@ var Game = (function() {
      */
     function start() {
         var FirstLevel = LEVELS[0];
-        
+
         currentLevel = new FirstLevel();
         currentLevel.start();
     }
@@ -51,5 +55,26 @@ var Game = (function() {
      */
     function getCurrentLevel() {
         return currentLevel;
+    }
+
+    /**
+     * Add to the game score
+     * @param {Number} scoreToAdd 
+     */
+    function addScore(scoreToAdd) {
+        score += scoreToAdd;
+    }
+
+    /**
+     * Start the next level
+     */
+    function goToNextLevel() {
+        currentLevelIndex++;
+        currentLevel.stop();
+        currentLevel = new LEVELS[currentLevelIndex];
+
+        if (currentLevel) {
+            currentLevel.start();
+        }
     }
 })();

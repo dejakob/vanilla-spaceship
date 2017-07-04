@@ -33,7 +33,7 @@ function Spaceship() {
 }
 
 // Spaceship constants
-Spaceship.STEP = 10;
+Spaceship.STEP = 20;
 
 /**
  * Move the spaceShip one step to left

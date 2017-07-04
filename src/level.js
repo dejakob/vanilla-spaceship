@@ -4,12 +4,14 @@
 function Level() {
     this.isRunning = false;
 
+    var handleKeyDown = handleKeyDown.bind(this);
+
     this.addKeyListeners = function() {
-        document.body.addEventListener('keydown', handleKeyDown.bind(this));
+        document.body.addEventListener('keydown', handleKeyDown);
     }
 
     this.removeKeyListeners = function() {
-        document.body.removeEventListener('keydown', handleKeyDown.bind(this));
+        document.body.removeEventListener('keydown', handleKeyDown);
     }
 
     function handleKeyDown(eventData) {
@@ -85,6 +87,25 @@ Level.prototype.start = function() {
         for (var i = 0; i < this.obstacles.length; i++) {
             this.obstacles[i].invade();
         }
+    }
+}
+
+Level.prototype.killObstacle = function(obstacle) {
+    obstacle.destroy();
+    this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
+    Game.addScore(obstacle.score);
+
+    if (this.obstacles.length === 0) {
+        Game.goToNextLevel();
+    }
+}
+
+Level.prototype.dodgeObstacle = function(obstacle) {
+    obstacle.destroy();
+    this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
+
+    if (this.obstacles.length === 0) {
+        Game.goToNextLevel();
     }
 }
 

@@ -59,8 +59,7 @@ Bullet.prototype.fire = function() {
                 var obstacle = obstacles[i];
 
                 if (hitTest(obstacle, this)) {
-                    obstacle.destroy();
-                    Game.getCurrentLevel().obstacles.splice(Game.getCurrentLevel().obstacles.indexOf(obstacle), 1);
+                    Game.getCurrentLevel().killObstacle(obstacle);
                     return this.destroy();
                 }
             }
@@ -84,6 +83,8 @@ Bullet.prototype.destroy = function() {
  */
 var Game = (function() {
     var currentLevel = null;
+    var currentLevelIndex = 0;
+    var score = 0;
 
     return {
         start: start,
@@ -91,7 +92,9 @@ var Game = (function() {
         resume: resume,
         stop: stop,
 
-        getCurrentLevel: getCurrentLevel
+        getCurrentLevel: getCurrentLevel,
+        addScore: addScore,
+        goToNextLevel: goToNextLevel
     };
 
     /**
@@ -99,7 +102,7 @@ var Game = (function() {
      */
     function start() {
         var FirstLevel = LEVELS[0];
-        
+
         currentLevel = new FirstLevel();
         currentLevel.start();
     }
@@ -133,6 +136,27 @@ var Game = (function() {
     function getCurrentLevel() {
         return currentLevel;
     }
+
+    /**
+     * Add to the game score
+     * @param {Number} scoreToAdd 
+     */
+    function addScore(scoreToAdd) {
+        score += scoreToAdd;
+    }
+
+    /**
+     * Start the next level
+     */
+    function goToNextLevel() {
+        currentLevelIndex++;
+        currentLevel.stop();
+        currentLevel = new LEVELS[currentLevelIndex];
+
+        if (currentLevel) {
+            currentLevel.start();
+        }
+    }
 })();
 /**
  * @author dejakob
@@ -161,12 +185,14 @@ var Game = (function() {
 function Level() {
     this.isRunning = false;
 
+    var handleKeyDown = handleKeyDown.bind(this);
+
     this.addKeyListeners = function() {
-        document.body.addEventListener('keydown', handleKeyDown.bind(this));
+        document.body.addEventListener('keydown', handleKeyDown);
     }
 
     this.removeKeyListeners = function() {
-        document.body.removeEventListener('keydown', handleKeyDown.bind(this));
+        document.body.removeEventListener('keydown', handleKeyDown);
     }
 
     function handleKeyDown(eventData) {
@@ -245,6 +271,25 @@ Level.prototype.start = function() {
     }
 }
 
+Level.prototype.killObstacle = function(obstacle) {
+    obstacle.destroy();
+    this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
+    Game.addScore(obstacle.score);
+
+    if (this.obstacles.length === 0) {
+        Game.goToNextLevel();
+    }
+}
+
+Level.prototype.dodgeObstacle = function(obstacle) {
+    obstacle.destroy();
+    this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
+
+    if (this.obstacles.length === 0) {
+        Game.goToNextLevel();
+    }
+}
+
 Level.prototype.pause = function() {
     this.isRunning = false;
     Timer.pause();
@@ -279,6 +324,7 @@ function Obstacle(options) {
     this.height = Obstacle.DEFAULT_HEIGHT;
     this.width = Obstacle.DEFAULT_WIDTH;
     this.step = Obstacle.DEFAULT_STEP;
+    this.score = Obstacle.DEFAULT_SCORE;
     this.x = obstacleOptions.x || 0;
     this.y = WindowHelper.getHeight() + (obstacleOptions.y || 0);
 
@@ -302,6 +348,7 @@ function Obstacle(options) {
 Obstacle.DEFAULT_HEIGHT = 100;
 Obstacle.DEFAULT_WIDTH = 100;
 Obstacle.DEFAULT_STEP = 3;
+Obstacle.DEFAULT_SCORE = 100;
 
 /**
  * Start invading space by going down
@@ -332,7 +379,7 @@ Obstacle.prototype.moveDown = function() {
     this.draw();
 
     if (this.y < -this.height) {
-        this.destroy();
+        Game.getCurrentLevel().dodgeObstacle(this);
     }
 }
 
@@ -381,7 +428,7 @@ function Spaceship() {
 }
 
 // Spaceship constants
-Spaceship.STEP = 10;
+Spaceship.STEP = 20;
 
 /**
  * Move the spaceShip one step to left
@@ -530,55 +577,6 @@ var Timer = (function() {
 
 Timer.INTERVAL = 50;
 /**
- * Test whether two blocks hit each other
- * @param {Object} objectA 
- * @param {Number} objectA.x
- * @param {Number} objectA.y
- * @param {Number} objectA.height
- * @param {Number} objectA.width
- * @param {Object} objectB
- * @param {Number} objectB.x
- * @param {Number} objectB.y
- * @param {Number} objectB.height
- * @param {Number} objectB.width
- */
-function hitTest(objectA, objectB) {
-    const points = [
-        [ objectB.x, objectB.y ],
-        [ objectB.x + objectB.width, objectB.y ],
-        [ objectB.x, objectB.y + objectB.height ],
-        [ objectB.x + objectB.width, objectB.y + objectB.height ]
-    ];
-
-    for (var i = 0; i < points.length; i++) {
-        var point = points[i];
-        var x = point[0];
-        var y = point[1];
-
-        if (x >= objectA.x && x <= objectA.x + objectA.width) {
-            if (y >= objectA.y && y <= objectA.y + objectA.height) {
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-var WindowHelper = {
-    getHeight: function() {
-        return window.innerHeight
-            || document.documentElement.clientHeight
-            || document.body.clientHeight;
-    },
-
-    getWidth: function() {
-        return window.innerWidth
-            || document.documentElement.clientWidth
-            || document.body.clientWidth;
-    }
-};
-
-/**
  * Level 1: Moon
  * @extends Level
  */
@@ -638,3 +636,52 @@ var LEVELS = [
     Moon,
     Mars
 ];
+
+/**
+ * Test whether two blocks hit each other
+ * @param {Object} objectA 
+ * @param {Number} objectA.x
+ * @param {Number} objectA.y
+ * @param {Number} objectA.height
+ * @param {Number} objectA.width
+ * @param {Object} objectB
+ * @param {Number} objectB.x
+ * @param {Number} objectB.y
+ * @param {Number} objectB.height
+ * @param {Number} objectB.width
+ */
+function hitTest(objectA, objectB) {
+    const points = [
+        [ objectB.x, objectB.y ],
+        [ objectB.x + objectB.width, objectB.y ],
+        [ objectB.x, objectB.y + objectB.height ],
+        [ objectB.x + objectB.width, objectB.y + objectB.height ]
+    ];
+
+    for (var i = 0; i < points.length; i++) {
+        var point = points[i];
+        var x = point[0];
+        var y = point[1];
+
+        if (x >= objectA.x && x <= objectA.x + objectA.width) {
+            if (y >= objectA.y && y <= objectA.y + objectA.height) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+var WindowHelper = {
+    getHeight: function() {
+        return window.innerHeight
+            || document.documentElement.clientHeight
+            || document.body.clientHeight;
+    },
+
+    getWidth: function() {
+        return window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
+    }
+};

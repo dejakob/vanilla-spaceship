@@ -59,8 +59,7 @@ Bullet.prototype.fire = function() {
                 var obstacle = obstacles[i];
 
                 if (hitTest(obstacle, this)) {
-                    obstacle.destroy();
-                    Game.getCurrentLevel().obstacles.splice(Game.getCurrentLevel().obstacles.indexOf(obstacle), 1);
+                    Game.getCurrentLevel().killObstacle(obstacle);
                     return this.destroy();
                 }
             }

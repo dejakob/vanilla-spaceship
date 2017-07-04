@@ -7,6 +7,7 @@ function Obstacle(options) {
     this.height = Obstacle.DEFAULT_HEIGHT;
     this.width = Obstacle.DEFAULT_WIDTH;
     this.step = Obstacle.DEFAULT_STEP;
+    this.score = Obstacle.DEFAULT_SCORE;
     this.x = obstacleOptions.x || 0;
     this.y = WindowHelper.getHeight() + (obstacleOptions.y || 0);
 
@@ -30,6 +31,7 @@ function Obstacle(options) {
 Obstacle.DEFAULT_HEIGHT = 100;
 Obstacle.DEFAULT_WIDTH = 100;
 Obstacle.DEFAULT_STEP = 3;
+Obstacle.DEFAULT_SCORE = 100;
 
 /**
  * Start invading space by going down
@@ -60,7 +62,7 @@ Obstacle.prototype.moveDown = function() {
     this.draw();
 
     if (this.y < -this.height) {
-        this.destroy();
+        Game.getCurrentLevel().dodgeObstacle(this);
     }
 }
 
