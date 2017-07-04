@@ -74,9 +74,14 @@ var Game = (function() {
         start: start,
         pause: pause,
         resume: resume,
-        stop: stop
+        stop: stop,
+
+        getCurrentLevel: getCurrentLevel
     };
 
+    /**
+     * Start the game
+     */
     function start() {
         var FirstLevel = LEVELS[0];
         currentLevel = new FirstLevel();
@@ -85,17 +90,34 @@ var Game = (function() {
         currentLevel.start();
     }
 
+    /**
+     * Pause the game
+     */
     function pause() {
         currentLevel.pause();
     }
 
+    /**
+     * Resume the game
+     */
     function resume() {
         currentLevel.resume();
     }
 
+    /**
+     * Stop the game
+     */
     function stop() {
         currentLevel.stop();
         currentLevel = null;
+    }
+
+    /**
+     * Returns the current level
+     * @returns {Level}
+     */
+    function getCurrentLevel() {
+        return currentLevel;
     }
 })();
 /**
@@ -222,6 +244,15 @@ Level.prototype.stop = function() {
     this.isRunning = false;
     this.spaceship.destroy();
     this.removeKeyListeners();
+
+    if (
+        this.obstacles &&
+        typeof this.obstacles.length === 'number'
+    ) {
+        for (var i = 0; i < this.obstacles.length; i++) {
+            this.obstacles[i].destroy();
+        }
+    }
 }
 /**
  * Obstacle you need to get rid of
@@ -264,6 +295,15 @@ Obstacle.prototype.invade = function() {
 
     function tick() {
         this.moveDown.call(this);
+
+        var isHittingSpaceship = hitTest(
+            Game.getCurrentLevel().spaceship,
+            this
+        );
+
+        if (isHittingSpaceship) {
+            Game.stop();
+        }
     }
 }
 
@@ -401,7 +441,15 @@ Spaceship.prototype.shoot = function() {
  * Destroy the spaceShip
  */
 Spaceship.prototype.destroy = function() {
-    this.spaceshipDom.parentElement.removeChild(this.spaceshipDom);
+    try {
+        this.spaceshipDom.parentNode.removeChild(this.spaceshipDom);
+        
+        for (var i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].destroy();
+        }
+    }
+    finally {
+    }
 }
 /**
  * Single instance Timer
@@ -468,6 +516,41 @@ var Timer = (function() {
 })();
 
 Timer.INTERVAL = 50;
+/**
+ * Test whether two blocks hit each other
+ * @param {Object} objectA 
+ * @param {Number} objectA.x
+ * @param {Number} objectA.y
+ * @param {Number} objectA.height
+ * @param {Number} objectA.width
+ * @param {Object} objectB
+ * @param {Number} objectB.x
+ * @param {Number} objectB.y
+ * @param {Number} objectB.height
+ * @param {Number} objectB.width
+ */
+function hitTest(objectA, objectB) {
+    const points = [
+        [ objectB.x, objectB.y ],
+        [ objectB.x + objectB.width, objectB.y ],
+        [ objectB.x, objectB.y + objectB.height ],
+        [ objectB.x + objectB.width, objectB.y + objectB.height ]
+    ];
+
+    for (var i = 0; i < points.length; i++) {
+        var point = points[i];
+        var x = point[0];
+        var y = point[1];
+
+        if (x >= objectA.x && x <= objectA.x + objectA.width) {
+            if (y >= objectA.y && y <= objectA.y + objectA.height) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 var WindowHelper = {
     getHeight: function() {
         return window.innerHeight

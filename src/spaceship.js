@@ -108,5 +108,13 @@ Spaceship.prototype.shoot = function() {
  * Destroy the spaceShip
  */
 Spaceship.prototype.destroy = function() {
-    this.spaceshipDom.parentElement.removeChild(this.spaceshipDom);
+    try {
+        this.spaceshipDom.parentNode.removeChild(this.spaceshipDom);
+        
+        for (var i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].destroy();
+        }
+    }
+    finally {
+    }
 }

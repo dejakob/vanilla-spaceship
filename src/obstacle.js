@@ -39,6 +39,15 @@ Obstacle.prototype.invade = function() {
 
     function tick() {
         this.moveDown.call(this);
+
+        var isHittingSpaceship = hitTest(
+            Game.getCurrentLevel().spaceship,
+            this
+        );
+
+        if (isHittingSpaceship) {
+            Game.stop();
+        }
     }
 }
 

@@ -101,4 +101,13 @@ Level.prototype.stop = function() {
     this.isRunning = false;
     this.spaceship.destroy();
     this.removeKeyListeners();
+
+    if (
+        this.obstacles &&
+        typeof this.obstacles.length === 'number'
+    ) {
+        for (var i = 0; i < this.obstacles.length; i++) {
+            this.obstacles[i].destroy();
+        }
+    }
 }
