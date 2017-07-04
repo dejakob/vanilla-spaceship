@@ -13,6 +13,8 @@ function Level() {
     }
 
     function handleKeyDown(eventData) {
+        eventData.preventDefault();
+
         if (this.isRunning) {
             switch (eventData.keyCode) {
                 case Level.KEY_CODES.UP:

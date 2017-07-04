@@ -68,10 +68,9 @@ Obstacle.prototype.moveDown = function() {
  * Destroy the obstacle
  */
 Obstacle.prototype.destroy = function() {
-    try {
+    if (this.obstacleDomElement.parentNode) {
         this.obstacleDomElement.parentNode.removeChild(this.obstacleDomElement);
     }
-    finally {
-        Timer.removeTick(this.interval);
-    }
+    
+    Timer.removeTick(this.interval);
 } 

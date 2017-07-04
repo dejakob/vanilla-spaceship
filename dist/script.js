@@ -49,6 +49,22 @@ Bullet.prototype.fire = function() {
         if (this.y > WindowHelper.getHeight()) {
             this.destroy();
         }
+
+        // Hit test with every obstacle
+        // Remove obstacle on hit
+        var obstacles = Game.getCurrentLevel().obstacles;
+
+        if (obstacles) {
+            for (let i = 0; i < obstacles.length; i++) {
+                var obstacle = obstacles[i];
+
+                if (hitTest(obstacle, this)) {
+                    obstacle.destroy();
+                    Game.getCurrentLevel().obstacles.splice(Game.getCurrentLevel().obstacles.indexOf(obstacle), 1);
+                    return this.destroy();
+                }
+            }
+        }
     }
 }
 
@@ -56,12 +72,13 @@ Bullet.prototype.fire = function() {
  * Destroy the bullet
  */
 Bullet.prototype.destroy = function() {
-    try {
+    console.log('destroy bullet');
+
+    if (this.bulletDomElement.parentNode) {
         this.bulletDomElement.parentNode.removeChild(this.bulletDomElement);
     }
-    finally {
-        Timer.removeTick(this.interval);
-    }
+
+    Timer.removeTick(this.interval);
 }
 
 /**
@@ -156,6 +173,8 @@ function Level() {
     }
 
     function handleKeyDown(eventData) {
+        eventData.preventDefault();
+
         if (this.isRunning) {
             switch (eventData.keyCode) {
                 case Level.KEY_CODES.UP:
@@ -324,12 +343,11 @@ Obstacle.prototype.moveDown = function() {
  * Destroy the obstacle
  */
 Obstacle.prototype.destroy = function() {
-    try {
+    if (this.obstacleDomElement.parentNode) {
         this.obstacleDomElement.parentNode.removeChild(this.obstacleDomElement);
     }
-    finally {
-        Timer.removeTick(this.interval);
-    }
+    
+    Timer.removeTick(this.interval);
 } 
 /**
  * Spaceship object
@@ -441,14 +459,12 @@ Spaceship.prototype.shoot = function() {
  * Destroy the spaceShip
  */
 Spaceship.prototype.destroy = function() {
-    try {
+    if (this.spaceshipDom.parentNode) {
         this.spaceshipDom.parentNode.removeChild(this.spaceshipDom);
-        
-        for (var i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].destroy();
-        }
     }
-    finally {
+    
+    for (var i = 0; i < this.bullets.length; i++) {
+        this.bullets[i].destroy();
     }
 }
 /**
