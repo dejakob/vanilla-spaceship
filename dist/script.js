@@ -72,8 +72,6 @@ Bullet.prototype.fire = function() {
  * Destroy the bullet
  */
 Bullet.prototype.destroy = function() {
-    console.log('destroy bullet');
-
     if (this.bulletDomElement.parentNode) {
         this.bulletDomElement.parentNode.removeChild(this.bulletDomElement);
     }
@@ -101,9 +99,8 @@ var Game = (function() {
      */
     function start() {
         var FirstLevel = LEVELS[0];
+        
         currentLevel = new FirstLevel();
-
-        console.log('current level', currentLevel);
         currentLevel.start();
     }
 

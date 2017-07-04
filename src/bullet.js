@@ -72,8 +72,6 @@ Bullet.prototype.fire = function() {
  * Destroy the bullet
  */
 Bullet.prototype.destroy = function() {
-    console.log('destroy bullet');
-
     if (this.bulletDomElement.parentNode) {
         this.bulletDomElement.parentNode.removeChild(this.bulletDomElement);
     }

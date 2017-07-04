@@ -18,9 +18,8 @@ var Game = (function() {
      */
     function start() {
         var FirstLevel = LEVELS[0];
+        
         currentLevel = new FirstLevel();
-
-        console.log('current level', currentLevel);
         currentLevel.start();
     }
 
