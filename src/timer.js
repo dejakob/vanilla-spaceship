@@ -8,6 +8,7 @@ var Timer = (function() {
     return {
         start: start.bind(this),
         pause: pause.bind(this),
+        stop: stop.bind(this),
         addTick: addTickEvent.bind(this),
         removeTick: removeTickEvent.bind(this)
     };
@@ -33,6 +34,11 @@ var Timer = (function() {
 
     function pause() {
         clearInterval(this.interval);
+    }
+
+    function stop() {
+        clearInterval(this.interval);
+        this.tickEvents = [];
     }
 })();
 

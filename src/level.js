@@ -79,7 +79,7 @@ Level.prototype.start = function() {
 
 Level.prototype.pause = function() {
     this.isRunning = false;
-    Timer.stop();
+    Timer.pause();
 }
 
 Level.prototype.resume = function() {
