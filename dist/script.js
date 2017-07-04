@@ -46,6 +46,10 @@ Bullet.prototype.fire = function() {
     function tick() {
         this.y += Bullet.STEP;
         this.draw();
+
+        if (this.y > WindowHelper.getHeight()) {
+            this.destroy();
+        }
     }
 }
 
