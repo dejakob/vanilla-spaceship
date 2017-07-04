@@ -74,6 +74,7 @@ var Game = (function() {
         currentLevel = new LEVELS[currentLevelIndex];
 
         if (currentLevel) {
+            alert('Go to the next level');
             currentLevel.start();
         }
     }
